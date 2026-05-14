@@ -74,7 +74,7 @@ export default class SectorManager {
             const { texture, biome } = await this.planetGen.generate(pSeed, { resolution: res });
             const radius = 500 + rng() * 1000;
             const geo = new THREE.SphereGeometry(radius, 64, 64);
-            const mat = new THREE.MeshStandardMaterial({ map: texture, metalness: 0, roughness: 0.8 });
+            const mat = new THREE.MeshStandardMaterial({ /* map: texture, */ metalness: 0, roughness: 0.8 });
             const planet = new THREE.Mesh(geo, mat);
 
             // 2. Clouds
