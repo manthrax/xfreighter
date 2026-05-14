@@ -263,11 +263,16 @@ export let stationLibrary = {};
 
 window.stationLibrary = stationLibrary;
 
+const assetPath = (path) => {
+    const base = import.meta.env.BASE_URL || './';
+    return (base.endsWith('/') ? base : base + '/') + path;
+};
+
 Promise.all([
-    new Promise((resolve, reject) => loader.load('ship_stack.glb', resolve, undefined, reject)),
-    new Promise((resolve, reject) => loader.load('station.glb', resolve, undefined, reject))
+    new Promise((resolve, reject) => loader.load(assetPath('ship_stack.glb'), resolve, undefined, reject)),
+    new Promise((resolve, reject) => loader.load(assetPath('station.glb'), resolve, undefined, reject))
 ]).then(async ([shipGltf, stationGltf]) => {
-    console.log("Main: Assets loaded successfully");
+// console.log("Main: Assets loaded successfully");
 
     stationGltf.scene.traverse(child => {
         if (child.isMesh) {
@@ -286,7 +291,7 @@ Promise.all([
             stationLibrary[child.name] = child;
         }
     });
-    console.log(`Main: Station library populated with ${Object.keys(stationLibrary).length} meshes`);
+// console.log(`Main: Station library populated with ${Object.keys(stationLibrary).length} meshes`);
     sectorManager.setStationLibrary(stationLibrary);
 
     const gltf = shipGltf;
@@ -402,11 +407,11 @@ Promise.all([
                 depthWrite: false,
                 side: THREE.DoubleSide
             });
-            
+
             const distMesh = new THREE.Mesh(child.geometry, distMaterial);
             distMesh.layers.set(1);
             child.add(distMesh);
-            
+
             thrusterDistortionMaterials.push(distMaterial);
             distMaterial.userData.baseStrength = strength;
         }
@@ -493,7 +498,7 @@ async function initGame() {
         resumeBtn.classList.remove('disabled');
         hud.show();
         hud.addMessage("SYSTEMS ONLINE. NEW EXPEDITION INITIALIZED.");
-        speak("...;", { voice: 'af_river' });
+        speak("<system boot>", { voice: 'af_river' });
         speak("Nebula Drift.", { voice: 'af_river' });
     });
 
@@ -828,8 +833,14 @@ function animate(time) {
         renderer.clear();
         postMaterial.uniforms.tDiffuse.value = mainRenderTarget.texture;
         postMaterial.uniforms.tDistortion.value = motionRenderTarget.texture;
-        postMaterial.uniforms.projectionMatrixInverse.value.copy(camera.projectionMatrixInverse);
-        postMaterial.uniforms.cameraMatrixWorld.value.copy(camera.matrixWorld);
+
+        if (camera.projectionMatrixInverse) {
+            postMaterial.uniforms.projectionMatrixInverse.value.copy(camera.projectionMatrixInverse);
+        }
+        if (camera.matrixWorld) {
+            postMaterial.uniforms.cameraMatrixWorld.value.copy(camera.matrixWorld);
+        }
+
         renderer.render(postScene, postCamera);
 
         // Restore layers

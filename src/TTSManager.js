@@ -259,7 +259,7 @@ export default class TTSManager {
             return;
         }
 
-        console.log(`TTSManager: Processing speech: "${text}"`);
+// console.log(`TTSManager: Processing speech: "${text}"`);
 
         // Return a promise for this specific speech task
         await new Promise((done) => {

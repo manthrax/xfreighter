@@ -211,12 +211,14 @@ export default class HUD {
             }
 
             // 2. Navigation Activity
-            const posDist = position ? position.distanceTo(this.lastStates.pos) : 0;
-            if (seed !== this.lastStates.sector || posDist > 10) {
-                this.timers.nav = Date.now();
-                this.nav.style.opacity = '1';
-                this.lastStates.sector = seed;
-                if (position) this.lastStates.pos.copy(position);
+            if (position && this.lastStates.pos) {
+                const posDist = position.distanceTo(this.lastStates.pos);
+                if (seed !== this.lastStates.sector || posDist > 10) {
+                    this.timers.nav = Date.now();
+                    this.nav.style.opacity = '1';
+                    this.lastStates.sector = seed;
+                    this.lastStates.pos.copy(position);
+                }
             }
 
             this.thrustVal.innerText = Math.round(thrust * 100);
@@ -262,7 +264,7 @@ export default class HUD {
                 this.lastStates.targetCount = targetCount;
             }
 
-            if (state.target) {
+            if (state.target && state.position) {
                 const dist = state.position.distanceTo(state.target.position);
                 this.targetName.innerText = state.target.userData.name || state.target.userData.type || "UNKNOWN";
                 this.targetDist.innerText = dist > 1000 ? (dist / 1000).toFixed(1) + "k" : Math.round(dist) + "m";
@@ -271,14 +273,16 @@ export default class HUD {
                 this.targetDist.innerText = "";
             }
 
-            // Unified Auto-fade logic
+            // Unified Auto-fade logic (Log and Economy fade out, others stay open as requested)
             const now = Date.now();
             const FADE_TIME = 2500;
             if (now - this.timers.log > FADE_TIME) this.log.style.opacity = '0';
             if (now - this.timers.economy > FADE_TIME) this.economy.style.opacity = '0';
-            if (now - this.timers.propulsion > FADE_TIME) this.propulsion.style.opacity = '0';
-            if (now - this.timers.nav > FADE_TIME) this.nav.style.opacity = '0';
-            if (now - this.timers.scan > FADE_TIME) this.scan.style.opacity = '0';
+            
+            // Ensure core systems stay visible
+            this.propulsion.style.opacity = '1';
+            this.nav.style.opacity = '1';
+            this.scan.style.opacity = '1';
         }
         
         // Draw Tracker (Always full FPS)
@@ -286,6 +290,7 @@ export default class HUD {
     }
 
     drawTracker(delta, ship, targets = [], activeTarget = null) {
+        if (!ship) return;
         const ctx = this.trackerCtx;
         const w = this.trackerCanvas.width;
         const h = this.trackerCanvas.height;
