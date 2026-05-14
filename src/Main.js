@@ -72,8 +72,8 @@ const postMaterial = new THREE.ShaderMaterial({
         tDiffuse: { value: mainRenderTarget.texture },
         tDistortion: { value: motionRenderTarget.texture },
         tDepth: { value: mainRenderTarget.depthTexture },
-        projectionMatrixInverse: { value: new THREE.Matrix4() },
-        cameraMatrixWorld: { value: new THREE.Matrix4() },
+        uProjectionMatrixInverse: { value: new THREE.Matrix4() },
+        uCameraMatrixWorld: { value: new THREE.Matrix4() },
         uExposure: { value: 1.2 }
     },
     vertexShader: `
@@ -87,8 +87,8 @@ const postMaterial = new THREE.ShaderMaterial({
         uniform sampler2D tDiffuse;
         uniform sampler2D tDistortion;
         uniform sampler2D tDepth;
-        uniform mat4 projectionMatrixInverse;
-        uniform mat4 cameraMatrixWorld;
+        uniform mat4 uProjectionMatrixInverse;
+        uniform mat4 uCameraMatrixWorld;
         uniform float uExposure;
         varying vec2 vUv;
         
@@ -118,9 +118,9 @@ const postMaterial = new THREE.ShaderMaterial({
             // Fallback for standard NDC [-1, 1] if the above is wrong:
             // vec4 clipSpace = vec4((vUv + offset) * 2.0 - 1.0, depth * 2.0 - 1.0, 1.0);
             
-            vec4 viewSpace = projectionMatrixInverse * clipSpace;
+            vec4 viewSpace = uProjectionMatrixInverse * clipSpace;
             viewSpace /= viewSpace.w;
-            vec4 worldSpace = cameraMatrixWorld * viewSpace;
+            vec4 worldSpace = uCameraMatrixWorld * viewSpace;
             
             // Apply Tone Mapping in the resolve pass
             texel.rgb = ACESFilmicToneMapping(texel.rgb);
@@ -834,11 +834,11 @@ function animate(time) {
         postMaterial.uniforms.tDiffuse.value = mainRenderTarget.texture;
         postMaterial.uniforms.tDistortion.value = motionRenderTarget.texture;
 
-        if (camera.projectionMatrixInverse) {
-            postMaterial.uniforms.projectionMatrixInverse.value.copy(camera.projectionMatrixInverse);
+        if (camera && camera.projectionMatrixInverse && camera.projectionMatrixInverse.elements) {
+            postMaterial.uniforms.uProjectionMatrixInverse.value.copy(camera.projectionMatrixInverse);
         }
-        if (camera.matrixWorld) {
-            postMaterial.uniforms.cameraMatrixWorld.value.copy(camera.matrixWorld);
+        if (camera && camera.matrixWorld && camera.matrixWorld.elements) {
+            postMaterial.uniforms.uCameraMatrixWorld.value.copy(camera.matrixWorld);
         }
 
         renderer.render(postScene, postCamera);
