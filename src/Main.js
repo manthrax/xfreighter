@@ -803,7 +803,8 @@ function animate(time) {
             });
         }
     }
-    if (window.useDistortionEffect) {
+    const isMarketActive = document.getElementById('market-ui').classList.contains('active');
+    if (window.useDistortionEffect && !isMarketActive) {
         // 1. Render Main Scene
         camera.layers.disable(1);
         renderer.setRenderTarget(mainRenderTarget);
