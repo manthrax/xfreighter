@@ -323,7 +323,7 @@ export default class HUD {
         const relativePos = new THREE.Vector3();
 
         targets.forEach(target => {
-            if (!target) return;
+            if (!target || !target.parent) return;
             relativePos.copy(target.position).sub(shipPos);
             relativePos.applyQuaternion(shipQuatInv);
             

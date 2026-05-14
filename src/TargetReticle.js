@@ -93,7 +93,7 @@ export default class TargetReticle {
 
         this.activeTargets.forEach((target, i) => {
             const mesh = this.reticles[i];
-            if (!target) {
+            if (!target || !target.parent) {
                 mesh.visible = false;
                 return;
             }
