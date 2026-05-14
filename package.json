@@ -1,0 +1,22 @@
+{
+  "name": "xfreighter",
+  "version": "1.0.0",
+  "description": "XFreighter - a small space sim",
+  "main": "index.html",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "deploy": "vite build && npx gh-pages -d dist"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "vite": "^5.0.0",
+    "@vitejs/plugin-basic-ssl": "^2.3.0"
+  },
+  "dependencies": {
+    "three": "^0.184.0"
+  }
+}

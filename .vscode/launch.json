@@ -1,0 +1,33 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "chrome",
+      "request": "launch",
+      "name": "Debug Nebularity (Vite Server)",
+      "url": "https://localhost:5173/index.html",
+      "webRoot": "${workspaceFolder}",
+      "preLaunchTask": "Start Dev Server"
+    },
+    {
+      "type": "chrome",
+      "request": "launch",
+      "url": "https://localhost:5173/index.html",
+    },
+    {
+      "type": "chrome",
+      "request": "launch",
+      "name": "Debug Nebularity (Port 5176)",
+      "url": "https://localhost:5176/index.html",
+      "webRoot": "${workspaceFolder}"
+    },
+    {
+      "type": "chrome",
+      "request": "launch",
+      "name": "Debug Nebula Drift (Vite Server)",
+      "url": "https://localhost:5173/game/index.html?dev=1",
+      "webRoot": "${workspaceFolder}",
+      "preLaunchTask": "Start Dev Server"
+    }
+  ]
+}
