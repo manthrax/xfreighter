@@ -273,7 +273,6 @@ export default class PlanetGenerator {
         this.renderer.setRenderTarget(oldTarget);
 
         const tex = rt.texture;
-        tex.matrixAutoUpdate = false; // Prevent automatic matrix updates that might crash
         tex.userData.renderTarget = rt; // Store for disposal
 
         // Force a GPU sync by reading a single pixel (blocks until render is complete)

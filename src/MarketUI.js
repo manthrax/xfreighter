@@ -6,14 +6,14 @@ export default class MarketUI {
         this.economy = deps.economy;
         this.hud = deps.hud;
         this.sectorManager = deps.sectorManager;
-        
+
         this.previewRenderer = null;
         this.previewScene = null;
         this.previewCamera = null;
         this.previewPlanet = null;
         this.previewClouds = null;
         this.uiPlanetGen = null;
-        
+
         this.flightController = null;
         this.currentSector = null;
 
