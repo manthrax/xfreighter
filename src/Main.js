@@ -22,6 +22,7 @@ import Starfield from './Starfield.js';
 import TargetReticle from './TargetReticle.js';
 import ContextUI from './ContextUI.js';
 import TTSManager from './TTSManager.js';
+import NpcManager from './NpcManager.js';
 
 const tts = new TTSManager();
 const contextUI = new ContextUI();
@@ -226,6 +227,7 @@ const sectorManager = new SectorManager({
 });
 
 const market = new MarketUI({ economy, hud, sectorManager });
+let npcManager = null;
 
 const getInSectorTargets = () => {
     const targets = [];
@@ -233,6 +235,9 @@ const getInSectorTargets = () => {
     sectorManager.warpPoints.forEach(wp => targets.push(wp.mesh));
     if (sectorManager.stations) {
         sectorManager.stations.forEach(s => targets.push(s.renderer.group));
+    }
+    if (npcManager) {
+        npcManager.activeNpcs.forEach(mesh => targets.push(mesh));
     }
     return targets;
 };
@@ -321,6 +326,10 @@ Promise.all([
 
     ship.scale.multiplyScalar(0.3);
     ship.updateMatrixWorld(true);
+
+    npcManager = new NpcManager({
+        scene, universe, shipLibrary, hud, sectorManager
+    });
 
     ship.traverse((child) => {
         if (child.isMesh && !child.name.startsWith('thruster')) {
@@ -603,6 +612,8 @@ function animate(time) {
             nearestPlanetDir: nearestP ? nearestP.position.clone().sub(flightController.ship.position).normalize() : null
         });
 
+        if (npcManager && currentSector) npcManager.update(delta, currentSector.id);
+
         // 2. Update Camera AFTER all physics are settled
         if (stationEditor.active) {
             // StationEditor controls camera
@@ -875,7 +886,7 @@ function animate(time) {
         camera.layers.enable(0);
     }
     if (starMap.visible) {
-        starMap.update(delta);
+        starMap.update(delta, npcManager);
         starMap.render(renderer);
     }
 }

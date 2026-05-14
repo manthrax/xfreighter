@@ -35,6 +35,16 @@ export default class StarMap {
         this.nodeSectors = []; // Map instance index back to sector data
         this.currentNodeIndex = -1;
 
+        // NPC Tracking on Map
+        this.npcDotGeo = new THREE.SphereGeometry(60, 8, 8);
+        this.npcDots = new THREE.InstancedMesh(
+            this.npcDotGeo,
+            new THREE.MeshBasicMaterial({ color: 0xff4444, toneMapped: false, blending: THREE.AdditiveBlending }),
+            100 // Max NPCs on map
+        );
+        this.npcDots.renderOrder = 2;
+        this.container.add(this.npcDots);
+
         // Interaction
         this.controls = new OrbitControls(this.camera, renderer.domElement);
         this.controls.enableDamping = true;
@@ -313,10 +323,36 @@ export default class StarMap {
         renderer.render(this.scene, this.camera);
     }
 
-    update(delta) {
+    update(delta, npcManager) {
         if (!this.visible) return;
         if (this.controls.enabled) {
             this.controls.update();
+        }
+
+        // --- Update NPC Icons ---
+        if (npcManager) {
+            npcManager.npcs.forEach((npc, i) => {
+                const startSector = this.universe.sectors.get(npc.currentSectorId);
+                const endSector = npc.targetSectorId ? this.universe.sectors.get(npc.targetSectorId) : startSector;
+
+                if (startSector && endSector) {
+                    let pos = startSector.pos.clone();
+                    if (npc.state === 'traveling') {
+                        const alpha = (Date.now() - npc.lastActionTime) / npc.transitDuration;
+                        pos.lerp(endSector.pos, THREE.MathUtils.clamp(alpha, 0, 1));
+                    }
+                    this._dummy.position.copy(pos);
+                    this._dummy.scale.set(1, 1, 1);
+                    this._dummy.updateMatrix();
+                    this.npcDots.setMatrixAt(i, this._dummy.matrix);
+                } else {
+                    // Hide if not valid
+                    this._dummy.scale.set(0, 0, 0);
+                    this._dummy.updateMatrix();
+                    this.npcDots.setMatrixAt(i, this._dummy.matrix);
+                }
+            });
+            this.npcDots.instanceMatrix.needsUpdate = true;
         }
 
         // Pulse Current and Selected Nodes
