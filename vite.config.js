@@ -14,8 +14,7 @@ export default defineConfig({
     outDir: 'dist',
     rollupOptions: {
       input: {
-        main: 'index.html',
-        game: 'game/index.html'
+        main: 'index.html'
       }
     }
   }
