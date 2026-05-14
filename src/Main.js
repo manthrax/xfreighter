@@ -280,7 +280,7 @@ Promise.all([
             if (!(oldMat instanceof THREE.MeshStandardMaterial)) {
                 child.material = new THREE.MeshStandardMaterial({
                     color: oldMat.color,
-                    map: oldMat.map,
+                    // map: oldMat.map,
                     metalness: 0.8,
                     roughness: 0.2,
                     envMapIntensity: 1.0
