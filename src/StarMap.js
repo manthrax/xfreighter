@@ -35,15 +35,19 @@ export default class StarMap {
         this.nodeSectors = []; // Map instance index back to sector data
         this.currentNodeIndex = -1;
 
-        // NPC Tracking on Map
-        this.npcDotGeo = new THREE.SphereGeometry(60, 8, 8);
+        // NPC Tracking on Map (Dev Mode)
+        this.npcDotGeo = new THREE.SphereGeometry(120, 8, 8);
         this.npcDots = new THREE.InstancedMesh(
             this.npcDotGeo,
-            new THREE.MeshBasicMaterial({ color: 0xff4444, toneMapped: false, blending: THREE.AdditiveBlending }),
+            new THREE.MeshBasicMaterial({ color: 0xff3333, toneMapped: false, blending: THREE.AdditiveBlending }),
             100 // Max NPCs on map
         );
         this.npcDots.renderOrder = 2;
         this.container.add(this.npcDots);
+        
+        const urlParams = new URLSearchParams(window.location.search);
+        this.devMode = urlParams.has('dev');
+        this.npcDots.visible = this.devMode;
 
         // Interaction
         this.controls = new OrbitControls(this.camera, renderer.domElement);
