@@ -832,8 +832,11 @@ function animate(time) {
 
         renderer.setClearColor(0x000000, 0);
         renderer.clear(true, false, false); // Clear color, keep depth from main scene
-        renderer.render(scene, camera);
-
+        try {
+            renderer.render(scene, camera);
+        } catch (e) {
+            console.error("Post-Processing Main Pass Error:", e);
+        }
         scene.background = cachedBackground;
         renderer.setClearColor(oldClearColor, oldClearAlpha);
 
@@ -850,7 +853,11 @@ function animate(time) {
             postMaterial.uniforms.uCameraMatrixWorld.value.copy(camera.matrixWorld);
         }
 
-        renderer.render(postScene, postCamera);
+        try {
+            renderer.render(postScene, postCamera);
+        } catch (e) {
+            console.error("Post-Processing Resolve Pass Error:", e);
+        }
 
         // Restore layers
         camera.layers.enable(0);
@@ -860,7 +867,11 @@ function animate(time) {
         renderer.clear();
         camera.layers.enable(0);
         camera.layers.disable(1); // Hide distortion objects
-        renderer.render(scene, camera);
+        try {
+            renderer.render(scene, camera);
+        } catch (e) {
+            console.error("Direct Render Error:", e);
+        }
         camera.layers.enable(0);
     }
     if (starMap.visible) {
