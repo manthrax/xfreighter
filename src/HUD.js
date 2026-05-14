@@ -150,6 +150,28 @@ export default class HUD {
         this.container = { style: { display: 'block' } }; // Shim for visibility logic
         this.readouts = [this.propulsion, this.log, this.nav, this.economy, this.scan];
         
+        // Auto-fade properties for ALL panels
+        this.readouts.forEach(r => {
+            r.style.transition = 'opacity 0.8s ease-out';
+            r.style.opacity = '1';
+        });
+
+        this.timers = {
+            log: Date.now(),
+            economy: Date.now(),
+            propulsion: Date.now(),
+            nav: Date.now(),
+            scan: Date.now()
+        };
+
+        this.lastStates = {
+            economy: "",
+            sector: "",
+            pos: new THREE.Vector3(),
+            target: null,
+            targetCount: 0
+        };
+
         this.updateTimer = 0;
         this.updateInterval = 0.1; // 100ms throttle for text
         
@@ -182,6 +204,21 @@ export default class HUD {
         if (this.updateTimer >= this.updateInterval) {
             this.updateTimer = 0;
             
+            // 1. Propulsion Activity
+            if (thrust > 0.01 || Math.abs(speed) > 0.1) {
+                this.timers.propulsion = Date.now();
+                this.propulsion.style.opacity = '1';
+            }
+
+            // 2. Navigation Activity
+            const posDist = position ? position.distanceTo(this.lastStates.pos) : 0;
+            if (seed !== this.lastStates.sector || posDist > 10) {
+                this.timers.nav = Date.now();
+                this.nav.style.opacity = '1';
+                this.lastStates.sector = seed;
+                if (position) this.lastStates.pos.copy(position);
+            }
+
             this.thrustVal.innerText = Math.round(thrust * 100);
             this.speedVal.innerText = speed.toFixed(1);
             this.chargeVal.innerText = Math.round(charge);
@@ -193,8 +230,15 @@ export default class HUD {
                 this.posZ.innerText = Math.round(position.z);
             }
             
-            // Update Economy
+            // 3. Economy Activity
             if (state.economy) {
+                const currentEconString = state.economy.credits + "_" + JSON.stringify(state.economy.inventory);
+                if (currentEconString !== this.lastStates.economy) {
+                    this.lastStates.economy = currentEconString;
+                    this.timers.economy = Date.now();
+                    this.economy.style.opacity = '1';
+                }
+
                 this.creditsVal.innerText = state.economy.credits.toLocaleString();
                 const inv = state.economy.inventory;
                 if (inv.length === 0) {
@@ -208,6 +252,16 @@ export default class HUD {
                     `).join('');
                 }
             }
+
+            // 4. Tactical Activity
+            const targetCount = targets ? targets.length : 0;
+            if (state.target !== this.lastStates.target || targetCount !== this.lastStates.targetCount) {
+                this.timers.scan = Date.now();
+                this.scan.style.opacity = '1';
+                this.lastStates.target = state.target;
+                this.lastStates.targetCount = targetCount;
+            }
+
             if (state.target) {
                 const dist = state.position.distanceTo(state.target.position);
                 this.targetName.innerText = state.target.userData.name || state.target.userData.type || "UNKNOWN";
@@ -216,6 +270,15 @@ export default class HUD {
                 this.targetName.innerText = "NONE";
                 this.targetDist.innerText = "";
             }
+
+            // Unified Auto-fade logic
+            const now = Date.now();
+            const FADE_TIME = 2500;
+            if (now - this.timers.log > FADE_TIME) this.log.style.opacity = '0';
+            if (now - this.timers.economy > FADE_TIME) this.economy.style.opacity = '0';
+            if (now - this.timers.propulsion > FADE_TIME) this.propulsion.style.opacity = '0';
+            if (now - this.timers.nav > FADE_TIME) this.nav.style.opacity = '0';
+            if (now - this.timers.scan > FADE_TIME) this.scan.style.opacity = '0';
         }
         
         // Draw Tracker (Always full FPS)
@@ -370,6 +433,9 @@ export default class HUD {
     }
 
     addMessage(msg) {
+        this.timers.log = Date.now();
+        this.log.style.opacity = '1';
+
         const div = document.createElement('div');
         div.className = 'msg-entry';
         div.innerText = msg;

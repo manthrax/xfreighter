@@ -12,7 +12,7 @@ export default class NameGenerator {
         this.roots = [
             "Anomalon", "Bastion", "Crateris", "Desolation", "Endymion", "Foundry", "Gauntlet",
             "Helios", "Ironclad", "Kyber", "Labyrinth", "Monolith", "Nemesis",
-            "Obelisk", "Pillar", "Ragnarok", "Shatter", "Terminal", "Underworld"
+            "Obelisk", "Terminal", "Underworld"
         ];
 
         this.suffixes = [
