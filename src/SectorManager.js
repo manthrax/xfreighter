@@ -202,6 +202,7 @@ export default class SectorManager {
         });
 
         // 3. Spawn Procedural Space Stations
+        /*
         if (this.stationLibrary) {
             const stationCount = 1 + Math.floor(rng() * 2);
             for (let i = 0; i < stationCount; i++) {
@@ -222,6 +223,7 @@ export default class SectorManager {
                 this.hud.addTargetPOI(stationRenderer.group.position, stationName);
             }
         }
+        */
     }
 
     updateRotations(delta) {

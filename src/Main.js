@@ -688,20 +688,28 @@ function animate(time) {
             target = targets[currentTargetIndex];
         }
 
-        hud.update(delta, {
-            thrust: flightController.thrustInput,
-            speed: flightController.velocity.length(),
-            charge: flightController.charge,
-            seed: sectorName,
-            position: flightController.ship.position,
-            ship: flightController.ship,
-            targets: targets,
-            target: target,
-            economy: economy.getState()
-        });
+        try {
+            hud.update(delta, {
+                thrust: flightController.thrustInput,
+                speed: flightController.velocity.length(),
+                charge: flightController.charge,
+                seed: sectorName,
+                position: flightController.ship.position,
+                ship: flightController.ship,
+                targets: targets,
+                target: target,
+                economy: economy.getState()
+            });
+        } catch (e) {
+            console.error("HUD Update Error:", e);
+        }
 
-        targetReticle.setTarget(target);
-        targetReticle.update(elapsed, delta);
+        try {
+            targetReticle.setTarget(target);
+            targetReticle.update(elapsed, delta);
+        } catch (e) {
+            console.error("TargetReticle Update Error:", e);
+        }
 
         // --- Context Aware Prompts ---
         let promptKey = null;
