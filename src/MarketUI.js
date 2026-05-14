@@ -103,8 +103,9 @@ export default class MarketUI {
             }
         });
 
-        if (!this.previewPlanet) this.setupPreview();
+        // if (!this.previewPlanet) this.setupPreview();
 
+        /*
         if (nearestPlanet && this.previewPlanet && this.uiPlanetGen) {
             const uiTexture = this.uiPlanetGen.generate(nearestPlanet.userData.seed, { resolution: 1024 });
             this.previewPlanet.material.map = uiTexture;
@@ -116,6 +117,7 @@ export default class MarketUI {
                 this.previewClouds.material.needsUpdate = true;
             }
         }
+        */
 
         ui.classList.add('active');
         if (document.pointerLockElement) document.exitPointerLock();
@@ -144,9 +146,11 @@ export default class MarketUI {
     update(delta) {
         const marketUI = document.getElementById('market-ui');
         if (marketUI && marketUI.classList.contains('active') && this.previewRenderer) {
+            /*
             this.previewPlanet.rotation.y += delta * 0.1;
             if (this.previewClouds) this.previewClouds.rotation.y += delta * 0.15;
             this.previewRenderer.render(this.previewScene, this.previewCamera);
+            */
         }
     }
 }
