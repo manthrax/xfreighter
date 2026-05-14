@@ -106,6 +106,11 @@ export default class MarketUI {
         if (!this.previewPlanet) this.setupPreview();
 
         if (nearestPlanet && this.previewPlanet && this.uiPlanetGen) {
+            const radius = nearestPlanet.userData.radius || 1000;
+            const radiusScale = radius / 1000; // Normalize relative to 1000m radius
+            this.previewPlanet.scale.setScalar(radiusScale);
+            if (this.previewClouds) this.previewClouds.scale.setScalar(radiusScale * 1.02);
+
             const uiTexture = this.uiPlanetGen.generate(nearestPlanet.userData.seed, { resolution: 1024 });
             this.previewPlanet.material.map = uiTexture.texture;
             this.previewPlanet.material.needsUpdate = true;
